@@ -64,6 +64,11 @@ public class FixedPointDecimal {
     }
 
 
+    @Override
+    public String toString() {
+        return this.val.toString();
+    }
+
     /**
      * Serializes this object into an existent buffer.
      */

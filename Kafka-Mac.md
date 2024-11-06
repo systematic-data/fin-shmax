@@ -13,3 +13,12 @@
 
     	./bin/zookeeper-server-start.sh config/zookeeper.properties
         ./bin/kafka-server-start.sh config/server.properties
+
+
+## Configuration
+Configure Kafka for HFT.
+
+Generally speaking, set the following values into `config/server.properties`
+
+        log.retention.ms = 10
+        log.cleanup.policy = delete

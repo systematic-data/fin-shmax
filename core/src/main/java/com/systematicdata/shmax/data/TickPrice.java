@@ -10,6 +10,7 @@ import com.systematicdata.fixmath.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 public class TickPrice {
     /**
      * Unique id for this produc and source.
@@ -38,7 +39,23 @@ public class TickPrice {
     private long receptionTime;
 
     /**
+     * Time when price was received in the system.
+     */
+    private long aggregationTime;
+
+
+    /**
      * The tick price itself.
      */
     private FixedPointDecimal price;
+
+
+    @Override
+    public String toString() {
+        return "tick(id="+ id + ",product=" + product 
+                + ",source=" + source + ",vanueTime=" + venueTime
+                + ",receptionTime=" + receptionTime
+                + ",aggregationTime=" + aggregationTime
+                + ",price=" + price + ")";
+    }
 }

@@ -2,6 +2,7 @@ package com.systematicdata.shmax.modules.aggregator.bus;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import com.systematicdata.shmax.data.TickPrice;
 
 /**
  * PriceTick consumer.
@@ -11,8 +12,11 @@ public class KafkaTickPriceConsumer {
 
     @KafkaListener(topics = "${spring.kafka.topic.tickprice.raw}", 
                   groupId = "aggregator")
-    public void consume(String message) {
-        System.out.println("message = " + message + ", thread=" 
+    public void consume(final TickPrice tickPrice) {
+        tickPrice.setAggregationTime(System.currentTimeMillis());
+        System.out.println("message = " + tickPrice + ", thread=" 
                 + Thread.currentThread());
+        System.out.println("Latency (ms) : " + (tickPrice.getAggregationTime()
+                - tickPrice.getVenueTime()));
     }
 }
