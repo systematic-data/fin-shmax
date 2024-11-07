@@ -22,6 +22,8 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
             return null;
         }
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            tickPrice.setT0(System.currentTimeMillis());
+
             ByteBuffer buffer = ByteBuffer.allocate(256);  
                     // Arbitrary starting size; can expand dynamically
             
@@ -38,10 +40,13 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
             
             buffer.putLong(tickPrice.getVenueTime());    // 8 bytes
             buffer.putLong(tickPrice.getReceptionTime());// 8 bytes
+            buffer.putLong(tickPrice.getAggregationTime());// 8 bytes
+
+            buffer.putLong(tickPrice.getT0());// 8 bytes
             
             // Serialize `price` (as BigDecimal value)
             tickPrice.getPrice().serialize(buffer);
-            
+
             // Transfer buffer to byte array
             baos.write(buffer.array(), 0, buffer.position());
             return baos.toByteArray();

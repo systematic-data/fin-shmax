@@ -40,6 +40,9 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
  
             tickPrice.venueTime(buffer.getLong());
             tickPrice.receptionTime(buffer.getLong());
+            tickPrice.aggregationTime(buffer.getLong());
+
+            tickPrice.l0(System.currentTimeMillis() - buffer.getLong());
             
             // Serialize `price` (as BigDecimal value)
             tickPrice.price(FixedPointDecimal.deserialize(buffer));

@@ -45,6 +45,11 @@ public class TickPrice {
 
 
     /**
+     * Internal usage to measure bus latency. Only T0 serialiazed.
+     */
+    private long t0, l0;
+
+    /**
      * The tick price itself.
      */
     private FixedPointDecimal price;
@@ -53,7 +58,7 @@ public class TickPrice {
     @Override
     public String toString() {
         return "tick(id="+ id + ",product=" + product 
-                + ",source=" + source + ",vanueTime=" + venueTime
+                + ",source=" + source + ",venueTime=" + venueTime
                 + ",receptionTime=" + receptionTime
                 + ",aggregationTime=" + aggregationTime
                 + ",price=" + price + ")";

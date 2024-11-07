@@ -16,7 +16,8 @@ public class KafkaTickPriceConsumer {
         tickPrice.setAggregationTime(System.currentTimeMillis());
         System.out.println("message = " + tickPrice + ", thread=" 
                 + Thread.currentThread());
-        System.out.println("Latency (ms) : " + (tickPrice.getAggregationTime()
+        System.out.println("Total Latency (ms) : " + (tickPrice.getAggregationTime()
                 - tickPrice.getVenueTime()));
+        System.out.println("Bus Latency (ms) : " + (tickPrice.getL0()));
     }
 }
