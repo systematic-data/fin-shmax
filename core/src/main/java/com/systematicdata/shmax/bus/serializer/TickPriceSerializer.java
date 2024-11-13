@@ -1,13 +1,15 @@
 package com.systematicdata.shmax.bus.serializer;
 
-import com.systematicdata.shmax.data.*;
 import java.io.*;
-import java.nio.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.*;
 import java.util.*;
+
 import lombok.extern.slf4j.*;
 import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.common.errors.*;
+
+import com.systematicdata.shmax.data.*;
 
 @Slf4j
 public class TickPriceSerializer implements Serializer<TickPrice> {
@@ -22,10 +24,20 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
             return null;
         }
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            tickPrice.setT0(System.currentTimeMillis());
-
             ByteBuffer buffer = ByteBuffer.allocate(256);  
-                    // Arbitrary starting size; can expand dynamically
+            int length = serialize(tickPrice, buffer);
+            baos.write(buffer.array(), 0, length);
+            return baos.toByteArray();
+        } catch (Exception e) {
+            throw new SerializationException(
+                    "Error when serializing MessageDto to byte[]");
+        }
+    }
+
+    public int serialize(final TickPrice tickPrice, final ByteBuffer buffer) 
+            throws SerializationException {
+        try {
+            tickPrice.setT0(System.currentTimeMillis());
             
             buffer.putLong(tickPrice.getId());      // 8 bytes
             
@@ -48,11 +60,11 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
             tickPrice.getPrice().serialize(buffer);
 
             // Transfer buffer to byte array
-            baos.write(buffer.array(), 0, buffer.position());
-            return baos.toByteArray();
+            return buffer.position();
         } catch (Exception e) {
+            log.error("Error when serializing TickPrice to byte[]", e);
             throw new SerializationException(
-                    "Error when serializing MessageDto to byte[]");
+                    "Error when serializing TickPrice to byte[]", e);
         }
     }
 

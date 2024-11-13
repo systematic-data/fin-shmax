@@ -2,12 +2,16 @@ package com.systematicdata.shmax.modules.aggregator.bus;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+
 import com.systematicdata.shmax.data.TickPrice;
 
 /**
  * PriceTick consumer.
  */
 @Component
+@ConditionalOnProperty(name="shmax.ggregator.kafka.use", 
+        havingValue="true", matchIfMissing=false)
 public class KafkaTickPriceConsumer {
 
     @KafkaListener(topics = "${spring.kafka.topic.tickprice.raw}", 

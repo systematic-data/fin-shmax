@@ -20,5 +20,14 @@ Configure Kafka for HFT.
 
 Generally speaking, set the following values into `config/server.properties`
 
-        log.retention.ms = 10
+        log.flush.interval=10
+        log.default.flush.interval.ms=100
+        log.default.flush.scheduler.interval.ms=100
+        log.retention.ms = 1
         log.cleanup.policy = delete
+        num.replica.fetchers=1
+        unclean.leader.election.enable=true
+        min.insync.replicas=1
+        acks=0
+        retention.ms=1
+        cleanup.policy=delete

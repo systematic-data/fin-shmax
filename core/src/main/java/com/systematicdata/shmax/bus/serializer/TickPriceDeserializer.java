@@ -5,7 +5,7 @@ import com.systematicdata.fixmath.*;
 import java.nio.*;
 import java.nio.charset.*;
 import java.util.*;
-import lombok.extern.slf4j.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.common.errors.*;
 
@@ -23,6 +23,16 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
         }
         try {
             final ByteBuffer buffer = ByteBuffer.wrap(data);
+            return this.deserialize(buffer);
+        } catch (Exception e) {
+            throw new SerializationException(
+                    "Error when deserializing MessageDto to byte[]", e);
+        }
+    }
+
+
+    public TickPrice deserialize(final ByteBuffer buffer) {
+        try {
             final TickPrice.TickPriceBuilder tickPrice = TickPrice.builder();
             tickPrice.id(buffer.getLong());
             
@@ -50,9 +60,10 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
             return tickPrice.build();
         } catch (Exception e) {
             throw new SerializationException(
-                    "Error when deserializing MessageDto to byte[]");
+                    "Error when deserializing MessageDto to byte[]", e);
         }
     }
+
 
 
     @Override
