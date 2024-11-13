@@ -21,8 +21,7 @@ import org.agrona.concurrent.UnsafeBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Future improvements:
- *      - Use Multicast 224.0.1.1 and so (config of OS?)
+ * Main entry point of the server.
  */
 public class Server {
     private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -96,46 +95,4 @@ public class Server {
             mediaDriver.close();
         }
     }
-
-    private class ServerAgent implements Callable<Void> {
-        private final Subscription subscription;
-        private final ExclusivePublication publication;
-        private final byte[] data;
-        private final UnsafeBuffer unsafeBuffer;
-        private final FragmentHandler fragmentHandler;
-        
-        public ServerAgent(final Subscription subscription,
-                final ExclusivePublication publication, 
-                final int dataSize) {
-            this.subscription = subscription;
-            this.publication = publication;
-            this.data = new byte[dataSize];
-
-            this.unsafeBuffer = new UnsafeBuffer(
-                    BufferUtil.allocateDirectAligned(256, dataSize));
-            // Define a fragment handler to process received messages
-            this.fragmentHandler = new FragmentHandler() {
-                @Override
-                public void onFragment(DirectBuffer buffer, int offset, int length, Header header) {
-                    buffer.getBytes(offset, data);
-                    // Re-publish the message to the broadcast channel
-                    unsafeBuffer.wrap(data, 0, length);
-                    long result = publication.offer(unsafeBuffer);
-                }
-            };
-        }
-
-        public Void call() {
-            final IdleStrategy idleStrategy = new BusySpinIdleStrategy();
-
-            // Keep polling the subscription for messages and handle them
-            log.info("Server " + subscription + "/" + publication + " running");
-            while (true) {
-                int fragmentsRead = subscription.poll(this.fragmentHandler, 1);
-                idleStrategy.idle(fragmentsRead);
-            }
-            //return null;
-        }
-    }
 }
-
