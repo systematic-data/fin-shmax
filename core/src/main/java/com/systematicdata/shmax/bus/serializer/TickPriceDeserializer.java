@@ -17,6 +17,11 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
 
     @Override
     public TickPrice deserialize(final String topic, final byte[] data) {
+        return this.deserialize(data);
+    }
+
+
+    public TickPrice deserialize(final byte[] data) {
         if (data == null){
             log.error("Null received at deserializing");
             return null;
