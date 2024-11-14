@@ -14,9 +14,11 @@ To run just with
         java --add-opens java.base/sun.nio.ch=ALL-UNNAMED --enable-preview
             -XX:ZCollectionInterval=20 -XX:MaxGCPauseMillis=1 -XX:+UseZGC  
             -jar aeron-server-VERSION-jar-with-dependencies.jar 
-            AERON-SERVER-NAME
+            AERON-SERVER-NAME AERON-SERVER-CONFIG
 
-`AERON-SERVER-NAME` should be present in configuration file
+`AERON-SERVER-NAME` should be, at the very present moment, always `bridge`
+
+`AERON-SERVER-CONFIG` should be present in configuration file
 
         resources/application.properties
 

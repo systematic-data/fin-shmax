@@ -27,27 +27,27 @@ public class ServerAgent implements Callable<Void> {
     private static final Logger log = LoggerFactory.getLogger(ServerAgent.class);
     private final Subscription subscription;
     private final ExclusivePublication publication;
-    private final byte[] data;
-    private final UnsafeBuffer unsafeBuffer;
+    private final byte[] dataInput;
+    private final UnsafeBuffer bufferOutput;
     private final FragmentHandler fragmentHandler;
     
     public ServerAgent(final Subscription subscription,
             final ExclusivePublication publication, 
-            final int dataSize) {
+            final int dataInputSize) {
         this.subscription = subscription;
         this.publication = publication;
-        this.data = new byte[dataSize];
+        this.dataInput = new byte[dataInputSize];
 
-        this.unsafeBuffer = new UnsafeBuffer(
-                BufferUtil.allocateDirectAligned(256, dataSize));
+        this.bufferOutput = new UnsafeBuffer(
+                BufferUtil.allocateDirectAligned(256, dataInputSize));
         // Define a fragment handler to process received messages
         this.fragmentHandler = new FragmentHandler() {
             @Override
             public void onFragment(DirectBuffer buffer, int offset, int length, Header header) {
-                buffer.getBytes(offset, data);
+                buffer.getBytes(offset, dataInput);
                 // Re-publish the message to the broadcast channel
-                unsafeBuffer.wrap(data, 0, length);
-                long result = publication.offer(unsafeBuffer);
+                bufferOutput.wrap(dataInput, 0, length);
+                long result = publication.offer(bufferOutput);
             }
         };
     }
@@ -56,7 +56,7 @@ public class ServerAgent implements Callable<Void> {
         final IdleStrategy idleStrategy = new BusySpinIdleStrategy();
 
         // Keep polling the subscription for messages and handle them
-        log.info("Server " + subscription + "/" + publication + " running");
+        log.info("Agent " + subscription + "/" + publication + " running");
         while (true) {
             int fragmentsRead = subscription.poll(this.fragmentHandler, 1);
             idleStrategy.idle(fragmentsRead);
