@@ -39,7 +39,8 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
         try {
             tickPrice.setT0(System.currentTimeMillis());
             
-            buffer.putLong(tickPrice.getId());      // 8 bytes
+            serializeString(tickPrice.getId(), buffer);
+            serializeString(tickPrice.getReqId(), buffer);
             
             serializeString(tickPrice.getProduct(), buffer);
             serializeString(tickPrice.getInstrument(), buffer);
@@ -53,11 +54,16 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
             
 
             // Price elements
-            buffer.putInt(tickPrice.getNumOfRungs());
-            for(int i=0; i<tickPrice.getNumOfRungs(); i++) {
-                buffer.putLong(tickPrice.getRungs()[i]);
-                tickPrice.getBids()[i].serialize(buffer);
+            buffer.putInt(tickPrice.getRungsAsk().length);
+            for(int i=0; i<tickPrice.getRungsAsk().length; i++) {
+                tickPrice.getRungsAsk()[i].serialize(buffer);
                 tickPrice.getAsks()[i].serialize(buffer);
+            }
+
+            buffer.putInt(tickPrice.getRungsBid().length);
+            for(int i=0; i<tickPrice.getRungsBid().length; i++) {
+                tickPrice.getRungsBid()[i].serialize(buffer);
+                tickPrice.getBids()[i].serialize(buffer);
             }
 
             // Transfer buffer to byte array

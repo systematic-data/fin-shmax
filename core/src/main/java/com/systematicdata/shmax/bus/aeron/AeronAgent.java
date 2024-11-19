@@ -40,6 +40,19 @@ public class AeronAgent implements Agent {
     private final MessageProcessor processor;
     private final String id;
     
+
+    /**
+     * Creates an Agent that only publishes into Aeron Bus.
+     */
+    public AeronAgent(final String id,
+            final ExclusivePublication publication, 
+            final int dataInputMaxSize) {
+        this(id, null, publication, dataInputMaxSize, null);
+    }
+
+    /**
+     * Creates an Agent publishes into and receives from Aeron Bus.
+     */
     public AeronAgent(final String id,
             final Subscription subscription,
             final ExclusivePublication publication, 
@@ -49,34 +62,45 @@ public class AeronAgent implements Agent {
         this.publication = publication;
         this.dataInput = new byte[dataInputMaxSize];
         this.processor = processor;
-        this.processor.setAgent(this);
         this.bufferOutput = new UnsafeBuffer(
                 BufferUtil.allocateDirectAligned(256, dataInputMaxSize));
 
         // Define a fragment handler to process received messages
-        this.fragmentHandler = new FragmentHandler() {
-            @Override
-            public void onFragment(final DirectBuffer buffer, final int offset, 
-                    final int length, final Header header) {
-                final long nano0 = System.nanoTime();
-                buffer.getBytes(offset, dataInput);
-                processor.process(dataInput);
-                final long nano1 = System.nanoTime();
-                //latencyReport.report(id, nano1-nano0);
-            }
-        };
+        if(processor!=null) {
+            this.processor.setAgent(this);
+            this.fragmentHandler = new FragmentHandler() {
+                @Override
+                public void onFragment(final DirectBuffer buffer, final int offset, 
+                        final int length, final Header header) {
+                    final long nano0 = System.nanoTime();
+                    buffer.getBytes(offset, dataInput);
+                    processor.process(dataInput);
+                    final long nano1 = System.nanoTime();
+                    //latencyReport.report(id, nano1-nano0);
+                }
+            };
+        } else {
+            this.fragmentHandler = null;
+        }
     }
 
     @Override
     public Void call() {
-        final IdleStrategy idleStrategy = new BusySpinIdleStrategy();
+        if(this.subscription == null) {
+            log.error("Agent " + id + " without subscription cannot receive "
+                    + " messages from Aeron bus");
+        } else {
+            final IdleStrategy idleStrategy = new BusySpinIdleStrategy();
 
-        // Keep polling the subscription for messages and handle them
-        log.info("Agent " + subscription + "/" + publication + " running");
-        while (true) {
-            int fragmentsRead = subscription.poll(this.fragmentHandler, 1);
-            idleStrategy.idle(fragmentsRead);
+            // Keep polling the subscription for messages and handle them
+            log.info("Agent " + this.id + ", " 
+                    + subscription + "/" + publication + " running");
+            while (true) {
+                int fragmentsRead = subscription.poll(this.fragmentHandler, 1);
+                idleStrategy.idle(fragmentsRead);
+            }
         }
+        return null;
     }
 
     @Override

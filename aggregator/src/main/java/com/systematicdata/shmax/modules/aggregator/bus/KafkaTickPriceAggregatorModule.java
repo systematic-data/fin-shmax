@@ -12,7 +12,7 @@ import com.systematicdata.shmax.data.TickPrice;
 @Component
 @ConditionalOnProperty(name="shmax.ggregator.kafka.use", 
         havingValue="true", matchIfMissing=false)
-public class KafkaTickPriceConsumer {
+public class KafkaTickPriceAggregatorModule {
 
     @KafkaListener(topics = "${spring.kafka.topic.tickprice.raw}", 
                   groupId = "aggregator")

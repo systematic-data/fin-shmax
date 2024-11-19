@@ -16,7 +16,12 @@ public class TickPrice {
     /**
      * Unique id for this produc and source.
      */
-    private long id;
+    private String id;
+
+    /**
+     * Id of the request to which this tick belongs.
+     */
+    private String reqId;
 
     /**
      * Product this price is referred to.
@@ -58,9 +63,9 @@ public class TickPrice {
     /**
      * The tick price itself.
      */
-    private int numOfRungs;
-    private long rungs[];
+    private FixedPointDecimal rungsBid[];
     private FixedPointDecimal bids[];
+    private FixedPointDecimal rungsAsk[];
     private FixedPointDecimal asks[];
 
 
@@ -85,8 +90,9 @@ public class TickPrice {
                 + ",type=" + type + ",venueTime=" + venueTime
                 + ",receptionTime=" + receptionTime
                 + ",aggregationTime=" + aggregationTime
-                + ",rungs=" + Arrays.toString(rungs)
+                + ",rungsBid=" + Arrays.toString(rungsBid)
                 + ",bids=" + Arrays.toString(bids)
+                + ",rungsAsk=" + Arrays.toString(rungsAsk)
                 + ",asks=" + Arrays.toString(asks);
     }
 }

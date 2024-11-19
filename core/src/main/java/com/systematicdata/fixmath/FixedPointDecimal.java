@@ -26,6 +26,10 @@ public class FixedPointDecimal {
         this.val = new BigDecimal(integerPart + "." + decimalPart);
     }
 
+    public FixedPointDecimal(final String str) {
+        this.val = new BigDecimal(str);
+    }
+
     public void add(final FixedPointDecimal x) {
         this.val = this.val.add(x.val);
     }

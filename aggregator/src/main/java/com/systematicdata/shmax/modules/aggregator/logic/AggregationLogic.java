@@ -43,8 +43,13 @@ public class AggregationLogic implements TickLogic {
 
     @Override
     public void process(final TickPrice tickPriceIn) {
-        // Normalize rungs.
-
+        // Normalize rungs: TODO
+        //
+        //      Same rungs for bid and ask
+        //      Standard configured rungs
+        //
+        final FixedPointDecimal rungsAsk[] = tickPriceIn.getRungsAsk();
+        final FixedPointDecimal rungsBid[] = tickPriceIn.getRungsBid();
 
         // Find new best price in each rung
         final Map<String, TickPrice> sources = this.instrumentSources.computeIfAbsent(
@@ -53,10 +58,12 @@ public class AggregationLogic implements TickLogic {
         sources.put(tickPriceIn.getType(), tickPriceIn);
 
         final TickPrice tickPriceOut = tickPriceIn.cloneNoPrice();
-        tickPriceOut.setBids(new FixedPointDecimal[tickPriceOut.getNumOfRungs()]);
-        tickPriceOut.setAsks(new FixedPointDecimal[tickPriceOut.getNumOfRungs()]);
+        tickPriceOut.setRungsAsk(rungsAsk);
+        tickPriceOut.setRungsBid(rungsBid);
+        tickPriceOut.setBids(new FixedPointDecimal[tickPriceOut.getRungsBid().length]);
+        tickPriceOut.setAsks(new FixedPointDecimal[tickPriceOut.getRungsAsk().length]);
 
-        for(int i=0; i<tickPriceIn.getNumOfRungs(); i++) {
+        for(int i=0; i<tickPriceIn.getRungsBid().length; i++) {
             FixedPointDecimal maxBid = FixedPointDecimal.MIN_VALUE;
             FixedPointDecimal minAsk = FixedPointDecimal.MAX_VALUE;;
             for(final TickPrice tick : sources.values()) {

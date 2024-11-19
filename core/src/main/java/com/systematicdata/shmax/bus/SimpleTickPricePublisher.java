@@ -25,6 +25,11 @@ public class SimpleTickPricePublisher implements Publisher {
     }
 
 
+    /**
+     * Sends the data to the bus.
+     * @param data mandatory a TickPrice object.
+     */
+    @Override
     public void publish(final Object data) {
         if(this.agent==null) {
             log.error("Trying to publish before complete initialization. Not 'Agent' set");
