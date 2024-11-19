@@ -41,27 +41,46 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
             final TickPrice.TickPriceBuilder tickPrice = TickPrice.builder();
             tickPrice.id(buffer.getLong());
             
-            // Serialize 'product' as UTF-8 bytes with length prefix 
+            // Deserialize 'product' as UTF-8 bytes with length prefix 
             final int lengthProduct = buffer.getShort();
             final byte[] bytesProduct = new byte[lengthProduct];
             buffer.get(bytesProduct);
             tickPrice.product(new String(bytesProduct, StandardCharsets.UTF_8));
-            
-            // Deserilize 'source' as UTF-8 with length prefix
-            final int lengthSource = buffer.getShort();
-            final byte[] bytesSource = new byte[lengthSource];
-            buffer.get(bytesSource);
-            tickPrice.source(new String(bytesSource, StandardCharsets.UTF_8));
+
+            // Deserialize 'instrument' as UTF-8 bytes with length prefix 
+            final int lengthInstrument = buffer.getShort();
+            final byte[] bytesInstrument = new byte[lengthInstrument];
+            buffer.get(bytesInstrument);
+            tickPrice.instrument(new String(bytesInstrument, StandardCharsets.UTF_8));
+ 
+            // Deserilize 'type' as UTF-8 with length prefix
+            final int lengthType = buffer.getShort();
+            final byte[] bytesType = new byte[lengthType];
+            buffer.get(bytesType);
+            tickPrice.type(new String(bytesType, StandardCharsets.UTF_8));
  
             tickPrice.venueTime(buffer.getLong());
             tickPrice.receptionTime(buffer.getLong());
             tickPrice.aggregationTime(buffer.getLong());
 
-            tickPrice.l0(System.currentTimeMillis() - buffer.getLong());
+            final long t0 = buffer.getLong();
+            tickPrice.t0(t0);
             
-            // Serialize `price` (as BigDecimal value)
-            tickPrice.price(FixedPointDecimal.deserialize(buffer));
+            // Deserialize price elements
+            final int numOfRungs = buffer.getInt();
+            final long rungs[] = new long[numOfRungs];
+            final FixedPointDecimal bids[] = new FixedPointDecimal[numOfRungs];
+            final FixedPointDecimal asks[] = new FixedPointDecimal[numOfRungs];
+            for(int i=0; i<numOfRungs; i++) {
+                rungs[i] = buffer.getLong(); 
+                bids[i] = FixedPointDecimal.deserialize(buffer);
+                asks[i] = FixedPointDecimal.deserialize(buffer);
+            }
+            tickPrice.rungs(rungs);
+            tickPrice.bids(bids);
+            tickPrice.asks(asks);
             
+            tickPrice.l0(System.currentTimeMillis() - t0);
             return tickPrice.build();
         } catch (Exception e) {
             throw new SerializationException(

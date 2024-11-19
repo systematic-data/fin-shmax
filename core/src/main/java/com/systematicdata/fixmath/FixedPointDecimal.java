@@ -8,6 +8,14 @@ import java.nio.charset.*;
  * At the moment, implemented using BigDecimal.
  */
 public class FixedPointDecimal {
+    public static final FixedPointDecimal MAX_VALUE =
+            new FixedPointDecimal(Integer.MAX_VALUE, 999999999);
+
+    public static final FixedPointDecimal MIN_VALUE =
+            new FixedPointDecimal(Integer.MIN_VALUE, 0);
+
+
+
     private BigDecimal val;
 
     protected FixedPointDecimal(final BigDecimal val) {
@@ -61,6 +69,14 @@ public class FixedPointDecimal {
 
     public int compareTo(final double x) {
         return this.val.compareTo(new BigDecimal(x));
+    }
+
+    public boolean greaterThan(final FixedPointDecimal x) {
+        return this.compareTo(x)>0;
+    }
+
+    public boolean smallerThan(final FixedPointDecimal x) {
+        return this.compareTo(x)<0;
     }
 
 

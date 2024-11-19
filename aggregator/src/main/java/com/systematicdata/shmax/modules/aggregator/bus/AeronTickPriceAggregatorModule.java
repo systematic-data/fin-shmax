@@ -25,6 +25,8 @@ import com.systematicdata.shmax.data.TickPrice;
 import com.systematicdata.shmax.bus.serializer.TickPriceDeserializer;
 import com.systematicdata.shmax.bus.*;
 import com.systematicdata.shmax.bus.aeron.*;
+import com.systematicdata.shmax.modules.aggregator.*;
+import com.systematicdata.shmax.modules.aggregator.logic.*;
 
 
 /**
@@ -33,31 +35,21 @@ import com.systematicdata.shmax.bus.aeron.*;
 @Slf4j
 @Component
 @ConditionalOnProperty(name="shmax.ggregator.aeron.use",
-        havingValue="true", matchIfMissing=false)
+                       havingValue="true", matchIfMissing=false)
 public class AeronTickPriceAggregatorModule {
     private final Aeron aeron;
-    private final TickPriceDeserializer deserializer;
 
     public AeronTickPriceAggregatorModule(
             @Value("${shmax.aeron.aggregator.server-subscribe}") String consumer,
             @Value("${shmax.aeron.aggregator.server-publish}") String publisher,
             @Value("${shmax.aeron.aggregator.dataSize}") int dataSize,
             @Value("${shmax.aeron.aggregator.rawStreamIds}") String streamIds) {
-        this.deserializer = new TickPriceDeserializer();
         final List<Integer> istreamIds = Arrays.stream(streamIds.split(","))
                 .map(Integer::parseInt).collect(Collectors.toList());
         final List<MessageProcessor> processors = new ArrayList<>();
-        processors.add((data, agent) -> {
-                final TickPrice tickPrice = deserializer.deserialize(data);
-
-                tickPrice.setAggregationTime(System.currentTimeMillis());
-                System.out.println("message = " + tickPrice + ", thread=" 
-                        + Thread.currentThread());
-                System.out.println("Total Latency (ms) : " + (tickPrice.getAggregationTime()
-                        - tickPrice.getVenueTime()));
-                System.out.println("Bus Latency (ms) : " + (tickPrice.getL0()));
-            });
-
+        processors.add(new TickPriceMessageProcessor(
+                new AggregationLogic(),
+                new SimpleTickPricePublisher()));
         this.aeron = AeronAgentFactory.getInstance().buildAeronConnection();
         AeronAgentFactory.getInstance().createAndStartupAgents(
                 this.aeron, consumer, publisher, dataSize, istreamIds, processors);

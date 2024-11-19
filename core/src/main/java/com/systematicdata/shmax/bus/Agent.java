@@ -1,6 +1,7 @@
 package com.systematicdata.shmax.bus;
 
 import java.io.*;
+import java.nio.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.nio.charset.*;
@@ -27,7 +28,7 @@ public interface Agent extends Callable<Void> {
     /**
      * Publish the message to bus.
      */
-    public void publish(final byte[] data, final int length);
+    public void publish(final ByteBuffer data, final int length);
 
     /**
      * Starts-up the agent to process incoming messages.

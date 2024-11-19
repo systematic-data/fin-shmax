@@ -64,6 +64,7 @@ public final class AeronAgentFactory {
                     + ", procesor: " + processor);
 
                 agents.add(new AeronAgent(
+                        processor.getClass().getName() + "-" + i,
                         aeron.addSubscription(consumer, istream),
                         aeron.addExclusivePublication(publisher, istream),
                         dataSize, processor));

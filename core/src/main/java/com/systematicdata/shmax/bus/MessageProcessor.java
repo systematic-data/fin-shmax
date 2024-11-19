@@ -29,6 +29,11 @@ public interface MessageProcessor {
     /**
      * Process a message and uses the Agent to send out a response.
      */
-    public void process(final byte[] data, final Agent agent);
+    public void process(final byte[] data);
+
+    /**
+     * Sets the agent to publish
+     */
+    public void setAgent(final Agent agent);
 }
 

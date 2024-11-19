@@ -41,14 +41,9 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
             
             buffer.putLong(tickPrice.getId());      // 8 bytes
             
-            // Serialize `product` as UTF-8 bytes with length prefix 
-            byte[] productBytes = tickPrice.getProduct().getBytes(StandardCharsets.UTF_8);
-            buffer.putShort((short) productBytes.length); // 2 bytes for length
-            buffer.put(productBytes); // UTF-8 string
-            
-            byte[] sourceBytes = tickPrice.getSource().getBytes(StandardCharsets.UTF_8);
-            buffer.putShort((short) sourceBytes.length);  // 2 bytes for lebgth
-            buffer.put(sourceBytes); // UTF-8 String
+            serializeString(tickPrice.getProduct(), buffer);
+            serializeString(tickPrice.getInstrument(), buffer);
+            serializeString(tickPrice.getType(), buffer);
             
             buffer.putLong(tickPrice.getVenueTime());    // 8 bytes
             buffer.putLong(tickPrice.getReceptionTime());// 8 bytes
@@ -56,8 +51,14 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
 
             buffer.putLong(tickPrice.getT0());// 8 bytes
             
-            // Serialize `price` (as BigDecimal value)
-            tickPrice.getPrice().serialize(buffer);
+
+            // Price elements
+            buffer.putInt(tickPrice.getNumOfRungs());
+            for(int i=0; i<tickPrice.getNumOfRungs(); i++) {
+                buffer.putLong(tickPrice.getRungs()[i]);
+                tickPrice.getBids()[i].serialize(buffer);
+                tickPrice.getAsks()[i].serialize(buffer);
+            }
 
             // Transfer buffer to byte array
             return buffer.position();
@@ -72,4 +73,16 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
     @Override
     public void close() {
     }
+
+
+    //
+    // PRIVATE STUFF ------------------------
+    //
+    private void serializeString(final String str, final ByteBuffer buffer) {
+            byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
+            buffer.putShort((short) bytes.length);  // 2 bytes for lebgth
+            buffer.put(bytes); // UTF-8 String
+        }
+
+
 }

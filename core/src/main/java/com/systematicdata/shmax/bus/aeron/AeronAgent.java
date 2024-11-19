@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.nio.charset.*;
+import java.nio.*;
 import org.slf4j.*;
 
 import io.aeron.Aeron;
@@ -24,6 +25,10 @@ import com.systematicdata.shmax.bus.*;
 
 /**
  * Each of the agents in charge of receive and broadcast messages.
+ *
+ * TODO: Implement a queue to let the messages and another thread to take them
+ * from it. Provide two strategies for the queue full: 
+ *      forget not-processed, block if queue is full
  */
 public class AeronAgent implements Agent {
     private static final Logger log = LoggerFactory.getLogger(AeronAgent.class);
@@ -33,24 +38,31 @@ public class AeronAgent implements Agent {
     private final UnsafeBuffer bufferOutput;
     private final FragmentHandler fragmentHandler;
     private final MessageProcessor processor;
+    private final String id;
     
-    public AeronAgent(final Subscription subscription,
+    public AeronAgent(final String id,
+            final Subscription subscription,
             final ExclusivePublication publication, 
-            final int dataInputSize, final MessageProcessor processor) {
+            final int dataInputMaxSize, final MessageProcessor processor) {
+        this.id = id;
         this.subscription = subscription;
         this.publication = publication;
-        this.dataInput = new byte[dataInputSize];
+        this.dataInput = new byte[dataInputMaxSize];
         this.processor = processor;
+        this.processor.setAgent(this);
         this.bufferOutput = new UnsafeBuffer(
-                BufferUtil.allocateDirectAligned(256, dataInputSize));
+                BufferUtil.allocateDirectAligned(256, dataInputMaxSize));
 
         // Define a fragment handler to process received messages
         this.fragmentHandler = new FragmentHandler() {
             @Override
             public void onFragment(final DirectBuffer buffer, final int offset, 
                     final int length, final Header header) {
+                final long nano0 = System.nanoTime();
                 buffer.getBytes(offset, dataInput);
-                processor.process(dataInput, AeronAgent.this);
+                processor.process(dataInput);
+                final long nano1 = System.nanoTime();
+                //latencyReport.report(id, nano1-nano0);
             }
         };
     }
@@ -68,7 +80,7 @@ public class AeronAgent implements Agent {
     }
 
     @Override
-    public void publish(final byte[] data, final int length) {
+    public void publish(final ByteBuffer data, final int length) {
         this.bufferOutput.wrap(data, 0, length);
         this.publication.offer(bufferOutput);
     }
