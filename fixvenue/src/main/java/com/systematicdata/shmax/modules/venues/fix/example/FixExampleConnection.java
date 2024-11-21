@@ -55,9 +55,10 @@ public class FixExampleConnection implements FixConnection {
         else return null;
     }
 
-    private static final MDEntryType mdEntryType = new MDEntryType();
-    private static final MDEntryPx mdEntryPx = new MDEntryPx();
-    private static final MDEntrySize mdEntrySize = new MDEntrySize();
+    private static final NoMDEntries NOMDENTRIES = new NoMDEntries();
+    private static final MDEntryType MDENTRYTYPE = new MDEntryType();
+    private static final MDEntryPx MDENTRYPX = new MDEntryPx();
+    private static final MDEntrySize MDENTRYSIZE = new MDEntrySize();
     private static final MDReqID MDREQID = new MDReqID();
     private static final QuoteID QUOTEID = new QuoteID();
     private static final Symbol SYMBOL = new Symbol();
@@ -74,15 +75,20 @@ public class FixExampleConnection implements FixConnection {
             final List<FixedPointDecimal> rungsAsk = new ArrayList<>();
             final List<FixedPointDecimal> bids = new ArrayList<>();
             final List<FixedPointDecimal> asks = new ArrayList<>();
-            for (Group g : message.getGroups(NoMDEntries.FIELD)) {
-                final MarketDataIncrementalRefresh.NoMDEntries group =
-                        (MarketDataIncrementalRefresh.NoMDEntries) g;
-                final char type = group.get(mdEntryType).getValue();
+            String symbol = "";
+            final int numOfGroups = message.get(NOMDENTRIES).getValue();
+            for(int i=1; i<=numOfGroups; i++) {
+                final MarketDataIncrementalRefresh.NoMDEntries group = 
+                        new MarketDataIncrementalRefresh.NoMDEntries();
+                message.getGroup(i, group);
+                symbol = group.getField(SYMBOL).getValue();
+                final char type = group.get(MDENTRYTYPE).getValue();
                 final FixedPointDecimal price = new FixedPointDecimal(
-                        group.get(mdEntryPx).toString());
+                        group.get(MDENTRYPX).getValue());
+
                 final FixedPointDecimal size = new FixedPointDecimal(
-                        group.get(mdEntrySize).toString());
-    
+                        group.get(MDENTRYSIZE).getValue());
+
                 // Rungs must appear in ascendant order.
                 if(type == MDEntryType.BID) {
                     bids.add(price);
@@ -93,10 +99,10 @@ public class FixExampleConnection implements FixConnection {
                 }
             }
 
-            tickPrice.setId(message.getField(QUOTEID).getValue());
+            tickPrice.setId(Long.toString(System.nanoTime()));
             tickPrice.setReqId(message.getField(MDREQID).getValue());
             tickPrice.setProduct("FXSPOT");
-            tickPrice.setInstrument(message.getField(SYMBOL).getValue());
+            tickPrice.setInstrument(symbol);
             tickPrice.setType("SAMPLE");
             tickPrice.setVenueTime(message.getHeader().getField(SENDINGTIME)
                     .getValue().toInstant(ZoneOffset.UTC).toEpochMilli());
@@ -107,7 +113,11 @@ public class FixExampleConnection implements FixConnection {
 
             publisher.publish(tickPrice);
         } catch(FieldNotFound e) {
+System.out.println("ERROR");
+e.printStackTrace();
 //        log.error("Error parsing FIX message:", e);
+
+
         }
     }
 }

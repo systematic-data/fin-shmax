@@ -24,7 +24,7 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
             return null;
         }
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            ByteBuffer buffer = ByteBuffer.allocate(256);  
+            ByteBuffer buffer = ByteBuffer.allocate(4096);  
             int length = serialize(tickPrice, buffer);
             baos.write(buffer.array(), 0, length);
             return baos.toByteArray();
@@ -85,10 +85,9 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
     // PRIVATE STUFF ------------------------
     //
     private void serializeString(final String str, final ByteBuffer buffer) {
-            byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
-            buffer.putShort((short) bytes.length);  // 2 bytes for lebgth
-            buffer.put(bytes); // UTF-8 String
-        }
-
+        byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
+        buffer.putShort((short) bytes.length);  // 2 bytes for lebgth
+        buffer.put(bytes); // UTF-8 String
+    }
 
 }

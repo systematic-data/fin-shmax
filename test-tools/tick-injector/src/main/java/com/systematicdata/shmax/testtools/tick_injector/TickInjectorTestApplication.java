@@ -23,7 +23,7 @@ public class TickInjectorTestApplication {
                 // Send a single "hello" message to Kafka
                 for(;;) {
                     final TickPrice tick = TickPrice.builder().id(System.nanoTime())
-                        .product("EURUSD.SPOT").source("MT4").venueTime(
+                        .product("EURUSD.SPOT").type("MT4").venueTime(
                                 System.currentTimeMillis())
                         .price(new FixedPointDecimal(1,203)).build();
                     kafkaProducer.sendTickPrice(tick);
@@ -34,7 +34,7 @@ public class TickInjectorTestApplication {
                 // Todo, convert in Sping Boot style
                 for(;;) {
                     final TickPrice tick = TickPrice.builder().id(System.nanoTime())
-                        .product("EURUSD.SPOT").source("MT4").venueTime(
+                        .product("EURUSD.SPOT").type("MT4").venueTime(
                                 System.currentTimeMillis())
                         .price(new FixedPointDecimal(1,203)).build();
                     aeronProducer.sendTickPrice(tick);

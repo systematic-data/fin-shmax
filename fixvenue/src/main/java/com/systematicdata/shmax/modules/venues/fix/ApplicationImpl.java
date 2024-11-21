@@ -115,7 +115,7 @@ public class ApplicationImpl extends MessageCracker implements Application {
         crack(message, sessionID);
     }
 
-    public void onMessage(MarketDataIncrementalRefresh message, SessionID sessionID) {
+    public void onMessage(final MarketDataIncrementalRefresh message, SessionID sessionID) {
         this.messageHandler.onMessage(message, sessionID);
     }
 }

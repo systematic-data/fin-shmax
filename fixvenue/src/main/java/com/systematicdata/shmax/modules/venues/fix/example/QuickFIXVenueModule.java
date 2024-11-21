@@ -35,8 +35,13 @@ public class QuickFIXVenueModule {
             @Value("${shmax.aeron.venues.fix.examples.quickfix.configFile}") String configFile) {
         final Publisher tickPublisher = new SimpleTickPricePublisher();
         this.aeron = AeronAgentFactory.getInstance().buildAeronConnection();
+
+        log.info("Creating Aeron Agent, publisher:" + publisher);
+        log.info("Creating Aeron Agent, dataSize:" + dataSize);
+        log.info("Creating Aeron Agent, rawStreamId:" + streamId);
         this.agent = new AeronAgent("QuickFIXExampleAgent", 
                 this.aeron.addExclusivePublication(publisher, streamId), dataSize);
+        tickPublisher.setAgent(agent);
 
         log.info("Creating FixExampleConnection....");
         final FixExampleConnection fixConnection = 

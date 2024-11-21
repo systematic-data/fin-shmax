@@ -86,6 +86,7 @@ public class AggregationLogic implements TickLogic {
         }
 
         // Publishes tick price.   
+System.out.println("Publishing in the Aggregator " + tickPriceOut);
         this.publisher.publish(tickPriceOut);
     }
 }
