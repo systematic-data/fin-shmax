@@ -15,14 +15,14 @@ import com.systematicdata.fixmath.*;
  * create the aggregated price.
  */
  @Slf4j
-public class AggregationLogic implements TickLogic {
+public class BestPriceAggregationLogic implements TickLogic {
     private final TickPriceSerializer serializer;
     private final Map<String, Map<String, TickPrice>> instrumentSources;
     
     private Publisher publisher;
 
 
-    public AggregationLogic() {
+    public BestPriceAggregationLogic() {
         this.instrumentSources = new HashMap<>();
         this.serializer = new TickPriceSerializer();
     }
@@ -31,10 +31,10 @@ public class AggregationLogic implements TickLogic {
     @Override
     public void setPublisher(final Publisher publisher) {
         if(this.publisher==null) {
-            log.info("Configuring publisher " + publisher + " for AggregationLogic");
+            log.info("Configuring publisher " + publisher + " for BestPriceAggregationLogic");
             this.publisher = publisher;
         } else {
-            log.error("Cannot configure the publisher twice the same AggregationLogic.");
+            log.error("Cannot configure the publisher twice the same BestPriceAggregationLogic.");
         }
     }
 
