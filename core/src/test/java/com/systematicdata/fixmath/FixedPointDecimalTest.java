@@ -12,6 +12,7 @@ public class FixedPointDecimalTest {
         assertEquals("-1.2345", new FixedPointDecimal("-1.2345").toString());
         assertEquals("1.2345", new FixedPointDecimal(1.2345).toString());
         assertEquals("-1.2345", new FixedPointDecimal(-1.2345).toString());
+        assertEquals("1234", new FixedPointDecimal(1234).toString());
     }
 
     @Test

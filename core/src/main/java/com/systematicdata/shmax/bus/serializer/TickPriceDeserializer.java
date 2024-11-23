@@ -52,11 +52,10 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
             tickPrice.aggregationTime(buffer.getLong());
 
             final long t0 = buffer.getLong();
-            tickPrice.t0(t0);
             
             // Deserialize price elements
             final int numOfRungsAsk = buffer.getInt();
-            final FixedPointDecimal rungsAsk[] = new FixedPointDecimal[numOfRungsAsk];
+                    final FixedPointDecimal rungsAsk[] = new FixedPointDecimal[numOfRungsAsk];
             final FixedPointDecimal asks[] = new FixedPointDecimal[numOfRungsAsk];
             for(int i=0; i<numOfRungsAsk; i++) {
                 rungsAsk[i] = FixedPointDecimal.deserialize(buffer);
@@ -75,7 +74,6 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
             tickPrice.asks(asks);
             tickPrice.rungsBid(rungsBid);
             tickPrice.bids(bids);
-            
             tickPrice.l0(System.currentTimeMillis() - t0);
             return tickPrice.build();
         } catch (Exception e) {

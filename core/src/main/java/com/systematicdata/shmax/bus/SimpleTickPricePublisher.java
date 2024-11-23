@@ -20,7 +20,7 @@ public class SimpleTickPricePublisher implements Publisher {
     private final TickPriceSerializer serializer;
 
     public SimpleTickPricePublisher() {
-        this.byteBuffer = ByteBuffer.allocate(256);
+        this.byteBuffer = ByteBuffer.allocate(4096);
         this.serializer = new TickPriceSerializer();
     }
 
@@ -37,6 +37,7 @@ public class SimpleTickPricePublisher implements Publisher {
         }
         final TickPrice tickPrice = (TickPrice) data;
         // Serializes TickPrice
+        this.byteBuffer.rewind();
         int length = this.serializer.serialize(tickPrice, this.byteBuffer);
         this.agent.publish(this.byteBuffer, length);
     }

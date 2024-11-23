@@ -135,14 +135,18 @@ public class FixedPointDecimal {
 
     @Override
     public String toString() {
-        String str = Long.toString(this.decimalPart);
-        StringBuilder sb = new StringBuilder("0".repeat(6-str.length()));
-        long decimal = decimalPart;
-        while((decimal/10)*10 == decimal) {
-            decimal = decimal/10;
+        if(decimalPart>0) {
+            String str = Long.toString(this.decimalPart);
+            StringBuilder sb = new StringBuilder("0".repeat(6-str.length()));
+            long decimal = decimalPart;
+            while((decimal/10)*10 == decimal) {
+                decimal = decimal/10;
+            }
+            sb.append(Long.toString(decimal));
+            return (this.positive ? "" : "-") + (integerPart + "." + sb);
+        } else {
+            return (this.positive ? "" : "-") + (integerPart);
         }
-        sb.append(Long.toString(decimal));
-        return (this.positive ? "" : "-") + (integerPart + "." + sb);
     }
 
     /**

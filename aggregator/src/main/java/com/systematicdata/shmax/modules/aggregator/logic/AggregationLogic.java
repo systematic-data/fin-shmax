@@ -16,7 +16,6 @@ import com.systematicdata.fixmath.*;
  */
  @Slf4j
 public class AggregationLogic implements TickLogic {
-    private final ByteBuffer byteBuffer;
     private final TickPriceSerializer serializer;
     private final Map<String, Map<String, TickPrice>> instrumentSources;
     
@@ -24,7 +23,6 @@ public class AggregationLogic implements TickLogic {
 
 
     public AggregationLogic() {
-        this.byteBuffer  = ByteBuffer.allocate(256);
         this.instrumentSources = new HashMap<>();
         this.serializer = new TickPriceSerializer();
     }
@@ -86,7 +84,6 @@ public class AggregationLogic implements TickLogic {
         }
 
         // Publishes tick price.   
-System.out.println("Publishing in the Aggregator " + tickPriceOut);
         this.publisher.publish(tickPriceOut);
     }
 }

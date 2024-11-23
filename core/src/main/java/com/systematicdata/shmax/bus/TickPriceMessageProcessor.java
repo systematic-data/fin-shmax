@@ -31,7 +31,7 @@ public class TickPriceMessageProcessor implements MessageProcessor {
 
         this.deserializer = new TickPriceDeserializer();
 
-        this.byteBuffer  = ByteBuffer.allocate(256);
+        this.byteBuffer  = ByteBuffer.allocate(4096);
         this.logic.setPublisher(publisher);
 
         log.info("Initialized TickPriceMessageProcessor for logic " + logic
@@ -41,9 +41,14 @@ public class TickPriceMessageProcessor implements MessageProcessor {
 
     public void process(final byte[] data) {
         // Deserializes TickPrice
-        final TickPrice tickPriceIn = this.deserializer.deserialize(data);
+        try {
+            final TickPrice tickPriceIn = this.deserializer.deserialize(data);
 
-        this.logic.process(tickPriceIn);
+            this.logic.process(tickPriceIn);
+        } catch(Exception e) {
+            log.error("Error deserializing data", e);
+        }
+
     }
 
 

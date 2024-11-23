@@ -16,27 +16,27 @@ public class TickPrice {
     /**
      * Unique id for this produc and source.
      */
-    private String id;
+    private String id="";
 
     /**
      * Id of the request to which this tick belongs.
      */
-    private String reqId;
+    private String reqId="";
 
     /**
      * Product this price is referred to.
      */
-    private String product;
+    private String product="";
 
     /**
      * Instrument this price is referred to.
      */
-    private String instrument;
+    private String instrument="";
 
     /**
      * Type of this price that originated it, or the source.
      */
-    private String type;
+    private String type="";
 
     /**
      * Time when price was originated.
@@ -72,6 +72,7 @@ public class TickPrice {
     public TickPrice cloneNoPrice() { 
         final TickPrice tickPrice = new TickPrice();
         tickPrice.setId(this.id);
+        tickPrice.setReqId(this.reqId);
         tickPrice.setProduct(this.product);
         tickPrice.setInstrument(this.instrument);
         tickPrice.setType(this.type);
@@ -85,7 +86,7 @@ public class TickPrice {
 
     @Override
     public String toString() {
-        return "tick(id="+ id + ",product=" + product 
+        return "tick(id="+ id + ",reqId=" + reqId + ",product=" + product 
                 + ",instrument=" + instrument
                 + ",type=" + type + ",venueTime=" + venueTime
                 + ",receptionTime=" + receptionTime
