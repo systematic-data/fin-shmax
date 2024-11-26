@@ -31,18 +31,22 @@ public class AeronTickPriceAggregatorModule {
             @Value("${shmax.aeron.aggregator.server-subscribe}") String consumer,
             @Value("${shmax.aeron.aggregator.server-publish}") String publisher,
             @Value("${shmax.aeron.aggregator.dataSize}") int dataSize,
-            @Value("${shmax.aeron.aggregator.rawStreamIds}") String streamIds) {
-        final List<Integer> istreamIds = Arrays.stream(streamIds.split(","))
+            @Value("${shmax.aeron.aggregator.rawStreamIds}") String subscribeStreamIds,
+            @Value("${shmax.aeron.aggregator.aggStreamIds}") String publishStreamIds) {
+        final List<Integer> istreamIds = Arrays.stream(subscribeStreamIds.split(","))
+                .map(Integer::parseInt).collect(Collectors.toList());
+        final List<Integer> ostreamIds = Arrays.stream(publishStreamIds.split(","))
                 .map(Integer::parseInt).collect(Collectors.toList());
 
         final List<MessageProcessor> processors = new ArrayList<>();
         processors.add(new TickPriceMessageProcessor(
-                new AggregationLogic(),
+                new BestPriceAggregationLogic(),
                 new SimpleTickPricePublisher()));
 
         this.aeron = AeronAgentFactory.getInstance().buildAeronConnection();
 
         AeronAgentFactory.getInstance().createAndStartupAgents(
-                this.aeron, consumer, publisher, dataSize, istreamIds, processors);
+                this.aeron, consumer, publisher, dataSize, istreamIds, ostreamIds,
+                processors);
     }
 }

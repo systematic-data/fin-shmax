@@ -84,6 +84,7 @@ public class BestPriceAggregationLogic implements TickLogic {
         }
 
         // Publishes tick price.   
+System.out.println("Aggregation , publish price " + tickPriceOut);
         this.publisher.publish(tickPriceOut);
     }
 }

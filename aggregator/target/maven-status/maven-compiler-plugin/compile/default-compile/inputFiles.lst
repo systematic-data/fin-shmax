@@ -1,0 +1,4 @@
+/Users/l/prg/fin-shmax/aggregator/src/main/java/com/systematicdata/shmax/modules/aggregator/AggregatorApplication.java
+/Users/l/prg/fin-shmax/aggregator/src/main/java/com/systematicdata/shmax/modules/aggregator/bus/AeronTickPriceAggregatorModule.java
+/Users/l/prg/fin-shmax/aggregator/src/main/java/com/systematicdata/shmax/modules/aggregator/bus/KafkaTickPriceAggregatorModule.java
+/Users/l/prg/fin-shmax/aggregator/src/main/java/com/systematicdata/shmax/modules/aggregator/logic/BestPriceAggregationLogic.java

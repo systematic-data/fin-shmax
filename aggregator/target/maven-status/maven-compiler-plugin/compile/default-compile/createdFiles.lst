@@ -1,0 +1,4 @@
+com/systematicdata/shmax/modules/aggregator/logic/BestPriceAggregationLogic.class
+com/systematicdata/shmax/modules/aggregator/bus/KafkaTickPriceAggregatorModule.class
+com/systematicdata/shmax/modules/aggregator/AggregatorApplication.class
+com/systematicdata/shmax/modules/aggregator/bus/AeronTickPriceAggregatorModule.class
