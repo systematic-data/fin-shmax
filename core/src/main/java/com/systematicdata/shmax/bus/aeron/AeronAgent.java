@@ -51,6 +51,17 @@ public class AeronAgent implements Agent {
     }
 
     /**
+     * Creates an Agent that only receives messages from Aeron Bus.
+     */
+    public AeronAgent(final String id,
+            final Subscription subscription,
+            final int dataInputMaxSize, final MessageProcessor processor) {
+        this(id, subscription, null, dataInputMaxSize, processor);
+    }
+
+
+
+    /**
      * Creates an Agent publishes into and receives from Aeron Bus.
      */
     public AeronAgent(final String id,
@@ -94,7 +105,9 @@ public class AeronAgent implements Agent {
 
             // Keep polling the subscription for messages and handle them
             log.info("Agent " + this.id + ", " 
-                    + subscription + "/" + publication + " running");
+                    + subscription + "/" 
+                    + (publication!=null ? publication : "(no publication)") 
+                    + " running");
             while (true) {
                 int fragmentsRead = subscription.poll(this.fragmentHandler, 1);
                 idleStrategy.idle(fragmentsRead);
@@ -105,6 +118,11 @@ public class AeronAgent implements Agent {
 
     @Override
     public void publish(final ByteBuffer data, final int length) {
+        if(this.publication == null) {
+            log.error("Trying to publish in Agent " + this.id 
+                + " without publiction");
+            return;
+        }
         this.bufferOutput.wrap(data, 0, length);
         this.publication.offer(bufferOutput);
     }

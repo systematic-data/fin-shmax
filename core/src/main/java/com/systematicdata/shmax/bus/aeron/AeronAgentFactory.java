@@ -40,13 +40,56 @@ public final class AeronAgentFactory {
     /**
      * Buils agents to process the list of given streams using the list of provided
      * processors.
-     * @param streamIds a list of stream ids to create the agents.
+     * @param consumerStreamIds a list of consumer stream ids to create the agents.
+     * @param publisherStreamIds a list of consumer stream ids to create the agents.
      * @param processors a list of Processor objects. If the size of the list is
      *      smaller than the list of streamIds, the last agent will share the 
      *      last element of the list of processors.
      */
     public StructuredTaskScope createAndStartupAgents(final Aeron aeron,
             final String consumer, final String publisher, final int dataSize,
+            final List<Integer> consumerStreamIds, final List<Integer> publisherStreamIds, 
+            final List<MessageProcessor> processors) {
+        final StructuredTaskScope scope = new StructuredTaskScope.ShutdownOnFailure();
+
+        final List<Agent> agents = new ArrayList<>();
+
+        for(int i=0; i<consumerStreamIds.size(); i++) {
+            final int istream = consumerStreamIds.get(i);
+            final MessageProcessor processor = i<processors.size() 
+                        ? processors.get(i) : processors.getLast();
+            final int ostream = i<publisherStreamIds.size()
+                        ? publisherStreamIds.get(i) : publisherStreamIds.getLast();
+
+            log.info("Creating agent : Subscription channel: " + consumer
+                    + ", Publich channel: " + publisher
+                    + ", consumer Stream Ids: " + istream 
+                    + ", producer Stream Ids: " + ostream 
+                    + ", buffer data size: " + dataSize + "bytes"
+                    + ", procesor: " + processor);
+
+            agents.add(new AeronAgent(
+                        processor.getClass().getName() + "-" + i,
+                        aeron.addSubscription(consumer, istream),
+                        aeron.addExclusivePublication(publisher, ostream),
+                        dataSize, processor));
+        }
+        for(final Agent agent : agents) {
+            scope.fork(agent);
+        }
+        return scope;
+    }
+
+    /**
+     * Buils agents to process the list of given streams using the list of provided
+     * processors but that does not publish anything to the bus.
+     * @param streamIds a list of stream ids to create the agents.
+     * @param processors a list of Processor objects. If the size of the list is
+     *      smaller than the list of streamIds, the last agent will share the 
+     *      last element of the list of processors.
+     */
+    public StructuredTaskScope createAndStartupAgents(final Aeron aeron,
+            final String consumer, final int dataSize,
             final List<Integer> streamIds, final List<MessageProcessor> processors) {
             final StructuredTaskScope scope = new StructuredTaskScope.ShutdownOnFailure();
 
@@ -58,7 +101,7 @@ public final class AeronAgentFactory {
                         ? processors.get(i) : processors.getLast();
 
                 log.info("Creating agent : Subscription channel: " + consumer
-                    + ", Publich channel: " + publisher
+                    + ", (No Publicher) "
                     + ", Stream Ids: " + istream 
                     + ", buffer data size: " + dataSize + "bytes"
                     + ", procesor: " + processor);
@@ -66,7 +109,6 @@ public final class AeronAgentFactory {
                 agents.add(new AeronAgent(
                         processor.getClass().getName() + "-" + i,
                         aeron.addSubscription(consumer, istream),
-                        aeron.addExclusivePublication(publisher, istream),
                         dataSize, processor));
             }
             for(final Agent agent : agents) {
@@ -74,6 +116,8 @@ public final class AeronAgentFactory {
             }
             return scope;
     }
+
+
 
 
     /**

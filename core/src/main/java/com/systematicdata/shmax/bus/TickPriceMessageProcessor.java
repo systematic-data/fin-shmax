@@ -11,8 +11,7 @@ import com.systematicdata.shmax.logic.*;
 import com.systematicdata.shmax.data.*;
 
 /**
- * Process a tick and 
- * create the aggregated price.
+ * Process a tick and provokes possibly an answer.
  */
 public class TickPriceMessageProcessor implements MessageProcessor {
     private static final Logger log = LoggerFactory.getLogger(
@@ -24,6 +23,17 @@ public class TickPriceMessageProcessor implements MessageProcessor {
     private final Publisher publisher;
 
 
+    /**
+     * Creates a tick processor that does not emit any answer directly.
+     */
+    public TickPriceMessageProcessor(final TickLogic logic) {
+        this(logic, null);
+    }
+ 
+
+    /**
+     * Creates a tick processor that does emit an answer directly.
+     */
     public TickPriceMessageProcessor(final TickLogic logic,
                 final Publisher publisher) {
         this.logic = logic;
@@ -32,10 +42,11 @@ public class TickPriceMessageProcessor implements MessageProcessor {
         this.deserializer = new TickPriceDeserializer();
 
         this.byteBuffer  = ByteBuffer.allocate(4096);
-        this.logic.setPublisher(publisher);
+        if(publisher!=null) this.logic.setPublisher(publisher);
 
         log.info("Initialized TickPriceMessageProcessor for logic " + logic
-                + " with publisher " + publisher);
+                + (publisher==null ?  " with no publisher." 
+                                   : (" with publisher " + publisher)));
     }
 
 
@@ -54,6 +65,11 @@ public class TickPriceMessageProcessor implements MessageProcessor {
 
     @Override
     public void setAgent(final Agent agent) {
-        this.publisher.setAgent(agent);
+        if(this.publisher != null) {
+            log.info("Setting publisher " + publisher + " to agent.");
+            this.publisher.setAgent(agent);
+        } else {
+            log.info("No publisher publisher set to agent.");
+        }
     }
 }
