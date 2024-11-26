@@ -25,6 +25,16 @@ import java.nio.charset.StandardCharsets;
  * Each of the agents in charge of receive and broadcast messages.
  */
 public interface Agent extends Callable<Void> {
+
+    /**
+     * Void agent when no Agent is still configured.
+     */
+    public static final Agent NullAgent = new Agent() {
+                public void publish(final ByteBuffer data, final int length) {}
+                public Void call() { return null; }
+            };
+
+
     /**
      * Publish the message to bus.
      */

@@ -9,6 +9,9 @@ import java.nio.charset.*;
  * Up to 6 decimals precission.
  */
 public class FixedPointDecimal {
+    public final static boolean POSITIVE = true;
+    public final static boolean NEGATIVE = false;
+
     public static final FixedPointDecimal MAX_VALUE =
             new FixedPointDecimal(true, Integer.MAX_VALUE, 999_999L);
 
@@ -18,7 +21,6 @@ public class FixedPointDecimal {
 
     private static final long DECIMAL_BASE = 1_000_000L; // 6 decimals precission
 
-    //private BigDecimal val;
     // Unsigned positive and negative part
     private long integerPart, decimalPart;
 
@@ -34,10 +36,14 @@ public class FixedPointDecimal {
 
     /**
      * Creates a Fixed point object.
-     * @param decimalPart the decimal part of the number, positive and less than 1e9
-     * @param integerPart the integer part of the number, might be negative.
+     * Do not use.... the "decimalPart" is based on 6 decial precission.
+
+     * @param positive true for greater than zero, false for less than zero.
+     * @param decimalPart the decimal part of the number, positive and less than 1e6.
+     *      For example 1 means .000001
+     * @param integerPart the integer part of the number, might not be negative.
      */
-    public FixedPointDecimal(final boolean positive,
+    protected FixedPointDecimal(final boolean positive,
             final long integerPart, final long decimalPart) {
         if(decimalPart<0 || decimalPart >= DECIMAL_BASE) {
             throw new IllegalArgumentException("Decimal part must be positive "
@@ -68,47 +74,163 @@ public class FixedPointDecimal {
     }
 
 
+    /**
+     * Constructor copy.
+     */
+    public FixedPointDecimal(final FixedPointDecimal x) {
+        this(x.positive, x.integerPart, x.decimalPart);
+    }
+
+
+    /**
+     * Adds to this number the given one and stores the result in this number.
+     */
+    public FixedPointDecimal addTo(final FixedPointDecimal x) {
+        this.addTo(x.positive, x.integerPart, x.decimalPart);
+        return this;
+    }
+
+    /**
+     * Adds to this number the given one and stores the result in this number.
+     */
+    public FixedPointDecimal addTo(final long x) {
+        this.addTo(x>0, x>0 ? x : -x, 0);
+        return this;
+    }
+
+    /**
+     * Adds to this number the given one and returns a new number with the result.
+     */
     public FixedPointDecimal add(final FixedPointDecimal x) {
-        this.add(x.positive, x.integerPart, x.decimalPart);
-        return this;
+        final FixedPointDecimal newVal = new FixedPointDecimal(
+                this.positive, this.integerPart, this.decimalPart);
+        newVal.addTo(x);
+        return newVal;
     }
 
+    /**
+     * Adds to this number the given one and returns a new number with the result.
+     */
     public FixedPointDecimal add(final long x) {
-        this.add(x>0, x>0 ? x : -x, 0);
+        final FixedPointDecimal newVal = new FixedPointDecimal(
+                this.positive, this.integerPart, this.decimalPart);
+        newVal.addTo(x);
+        return newVal;
+    }
+
+    /**
+     * Subtract to this number the given one and stores the result in this number.
+     */
+    public FixedPointDecimal subtractTo(final long x) {
+        this.addTo(-x);
         return this;
     }
 
+    /**
+     * Subtract to this number the given one and stores the result in this number.
+     */
+    public FixedPointDecimal subtractTo(final FixedPointDecimal x) {
+        x.positive = !x.positive;
+        this.addTo(x);
+        x.positive = !x.positive;
+        return this;
+    }
+
+    /**
+     * Subtract to this number the given one and returns a new object with the result.
+     */
     public FixedPointDecimal subtract(final FixedPointDecimal x) {
-        x.positive = !x.positive;
-        this.add(x);
-        x.positive = !x.positive;
-        return this;
+        final FixedPointDecimal newVal = new FixedPointDecimal(
+                this.positive, this.integerPart, this.decimalPart);
+        newVal.subtractTo(x);
+        return newVal;
     }
 
+    /**
+     * Subtract to this number the given one and returns a new object with the result.
+     */
     public FixedPointDecimal subtract(final long x) {
-        this.add(-x);
+        final FixedPointDecimal newVal = new FixedPointDecimal(
+                this.positive, this.integerPart, this.decimalPart);
+        newVal.subtractTo(x);
+        return newVal;
+    }
+
+
+    /**
+     * Multiplies this number by given and stores the result in this number.
+     */
+    public FixedPointDecimal multiplyTo(final FixedPointDecimal x) {
+        multiplyTo(x.positive, x.integerPart, x.decimalPart);
         return this;
     }
 
+    /**
+     * Multiplies this number by given and stores the result in this number.
+     */
+    public FixedPointDecimal multiplyTo(final long x) {
+        multiplyTo(x>0, x>0 ? x : -x, 0);
+        return this;
+    }
+
+    /**
+     * Multiplies this number by given and returns a new number with the result.
+     */
     public FixedPointDecimal multiply(final FixedPointDecimal x) {
-        multiply(x.positive, x.integerPart, x.decimalPart);
-        return this;
+        final FixedPointDecimal newVal = new FixedPointDecimal(
+                this.positive, this.integerPart, this.decimalPart);
+        newVal.multiplyTo(x);
+        return newVal;
     }
 
+    /**
+     * Multiplies this number by given and returns a new number with the result.
+     */
     public FixedPointDecimal multiply(final long x) {
-        multiply(x>0, x>0 ? x : -x, 0);
+        final FixedPointDecimal newVal = new FixedPointDecimal(
+                this.positive, this.integerPart, this.decimalPart);
+        newVal.multiplyTo(x);
+        return newVal;
+    }
+
+    /**
+     * Divides this number by given and stores the result in this number.
+     */
+    public FixedPointDecimal divideTo(final FixedPointDecimal x) {
+        divideTo(x.positive, x.integerPart, x.decimalPart);
         return this;
     }
 
+   /**
+     * Divides this number by given and stores the result in this number.
+     */
+    public FixedPointDecimal divideTo(final long x) {
+        divideTo(x>0, x>0 ? x : -x, 0);
+        return this;
+    }
+
+    /**
+     * Divides this number by given and return a new number with the result.
+     */
     public FixedPointDecimal divide(final FixedPointDecimal x) {
-        divide(x.positive, x.integerPart, x.decimalPart);
-        return this;
+        final FixedPointDecimal newVal = new FixedPointDecimal(
+                this.positive, this.integerPart, this.decimalPart);
+        newVal.divideTo(x);
+        return newVal;
     }
 
+
+    /**
+     * Divides this number by given and return a new number with the result.
+     */
     public FixedPointDecimal divide(final long x) {
-        divide(x>0, x>0 ? x : -x, 0);
-        return this;
+        final FixedPointDecimal newVal = new FixedPointDecimal(
+                this.positive, this.integerPart, this.decimalPart);
+        newVal.divideTo(x);
+        return newVal;
     }
+
+
 
     public int compareTo(final FixedPointDecimal x) {
         return this.compareTo(x.positive, x.integerPart, x.decimalPart);
@@ -133,6 +255,14 @@ public class FixedPointDecimal {
     }
 
 
+    /**
+     * Returns true only if the value is greater extrictly than zero.
+     */
+    public boolean isPositive() {
+        return this.positive && (this.integerPart>0 || this.decimalPart>0);
+    }
+
+
     @Override
     public String toString() {
         if(decimalPart>0) {
@@ -148,6 +278,7 @@ public class FixedPointDecimal {
             return (this.positive ? "" : "-") + (integerPart);
         }
     }
+
 
     /**
      * Serializes this object into an existent buffer.
@@ -193,7 +324,7 @@ public class FixedPointDecimal {
     }
 
 
-    private void multiply(final boolean positive, final long integerPart, 
+    private void multiplyTo(final boolean positive, final long integerPart, 
                 final long decimalPart) {
         long a = this.integerPart * DECIMAL_BASE + this.decimalPart;
         long b = integerPart * DECIMAL_BASE + decimalPart;
@@ -206,7 +337,7 @@ public class FixedPointDecimal {
     }
 
 
-    private void divide(final boolean positive, final long integerPart, 
+    private void divideTo(final boolean positive, final long integerPart, 
             final long decimalPart) {
         if(integerPart == 0 && decimalPart == 0) {
             throw new ArithmeticException("Division by zero");
@@ -224,7 +355,7 @@ public class FixedPointDecimal {
 
 
 
-    private void add(final boolean positive, final long integerPart, 
+    private void addTo(final boolean positive, final long integerPart, 
             final long decimalPart) {
         long newInteger, newDecimal;
         if(this.positive == positive) {

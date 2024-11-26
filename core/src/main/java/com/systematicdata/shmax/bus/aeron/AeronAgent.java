@@ -32,6 +32,7 @@ import com.systematicdata.shmax.bus.*;
  */
 public class AeronAgent implements Agent {
     private static final Logger log = LoggerFactory.getLogger(AeronAgent.class);
+
     private final Subscription subscription;
     private final ExclusivePublication publication;
     private final byte[] dataInput;

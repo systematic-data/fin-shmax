@@ -13,6 +13,9 @@ public class FixedPointDecimalTest {
         assertEquals("1.2345", new FixedPointDecimal(1.2345).toString());
         assertEquals("-1.2345", new FixedPointDecimal(-1.2345).toString());
         assertEquals("1234", new FixedPointDecimal(1234).toString());
+        assertEquals("1234", new FixedPointDecimal(new FixedPointDecimal(1234)).toString());
+        assertEquals("-0.1234", new FixedPointDecimal(
+                new FixedPointDecimal("-0.1234")).toString());
     }
 
     @Test
@@ -22,25 +25,27 @@ public class FixedPointDecimalTest {
 
         a = new FixedPointDecimal("1.2345");
         b = new FixedPointDecimal("2.34567");
-        a.add(b);
+        a.addTo(b);
         assertEquals("3.58017", a.toString());
 
         a = new FixedPointDecimal("1.2345");
         b = new FixedPointDecimal("2.34567");
-        a.add(b);
+        a.addTo(b);
         assertEquals("3.58017", a.toString());
 
         a = new FixedPointDecimal("1.2345");
-        a.add(1);
+        a.addTo(1);
         assertEquals("2.2345", a.toString());
 
         a = new FixedPointDecimal("1.2345");
-        a.add(-1);
+        a.addTo(-1);
         assertEquals("0.2345", a.toString());
 
         a = new FixedPointDecimal("1.2345");
         b = new FixedPointDecimal("-2.34567");
         assertEquals("-1.11117", a.add(b).toString());
+        assertEquals("1.2345", a.toString());
+        assertEquals("-2.34567", b.toString());
     }
 
     @Test
@@ -50,22 +55,22 @@ public class FixedPointDecimalTest {
 
         a = new FixedPointDecimal("1.2345");
         b = new FixedPointDecimal("2.34567");
-        a.subtract(b);
+        a.subtractTo(b);
         assertEquals("-1.11117", a.toString());
 
         a = new FixedPointDecimal("1.2345");
         b = new FixedPointDecimal("2.34567");
-        a.subtract(1);
+        a.subtractTo(1);
         assertEquals("0.2345", a.toString());
 
         a = new FixedPointDecimal("1.2345");
         b = new FixedPointDecimal("2.34567");
-        a.subtract(-1);
+        a.subtractTo(-1);
         assertEquals("2.2345", a.toString());
  
         a = new FixedPointDecimal("1.2345");
         b = new FixedPointDecimal("-2.34567");
-        a.subtract(b);
+        a.subtractTo(b);
         assertEquals("3.58017", a.toString());
     }
 

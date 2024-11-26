@@ -15,3 +15,21 @@ import com.systematicdata.fixmath.*;
  */
 public class HedgeLogic {
     private static final Logger log = LoggerFactory.getLogger(HedgeLogic.class);
+
+    public HedgeLogic(final TickMemory ticksForHedging, 
+            final TradeMemory tradesToHedge, final Publisher publisher) {
+
+    }
+
+    @Override
+    public void setPublisher(final Publisher publisher) {
+        if(this.publisher==null) {
+            log.info("Configuring publisher " + publisher
+                    + " for FxTradePositionLogic");
+            this.publisher = publisher;
+        } else {
+            log.error("Cannot configure the publisher twice the same "
+                + "FxTradePositionLogic.");
+        }
+    }
+}
