@@ -12,7 +12,7 @@ import com.systematicdata.fixmath.*;
 @NoArgsConstructor
 @Builder
 @Setter
-public class TradeOrder {
+public class TradeRequest {
     /**
      * Unique id order
      */
@@ -46,12 +46,12 @@ public class TradeOrder {
     /**
      * Creation time.
      */
-    private final long creationTime = System.currentTimeMillis();
+    private long creationTime = System.currentTimeMillis();
     
 
     @Override
     public String toString() {
-        return "TradeOrder id=" + id + ", side=" + side
+        return "TradeRequest id=" + id + ", side=" + side
                 + "amount=" + amount + ", totalLimitPrice=" + totalPrice 
                 + " " + product + " " + instrument + ", created " + creationTime;
     }

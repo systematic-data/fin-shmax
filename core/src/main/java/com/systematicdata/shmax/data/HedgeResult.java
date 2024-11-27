@@ -12,14 +12,14 @@ import com.systematicdata.fixmath.*;
 @NoArgsConstructor
 @Builder
 @Setter
-public class HedgeOrder {
+public class HedgeResult {
     /**
      * Unique id of the hedge.
      */
     private String id="";
 
     /**
-     * Id of the tick with the price we want to use.
+     * Id of the tick with the price we used.
      */
     private String tickId="";
 
@@ -34,32 +34,41 @@ public class HedgeOrder {
     private String instrument="";
 
     /**
-     * Type of this price that originated it, or the source.
+     * Source that has hedged the request.
      */
-    private String type="";
-
+    private String source="";
 
     /**
-     * Execution vwap total price (limit).
+     * Execution vwap total price (hedge).
      */
-    private FixedPointDecimal limitTotalPrice;
+    private FixedPointDecimal totalPrice;
+
+    /**
+     * Hedged amount
+     */
+    private FixedPointDecimal amount;
 
     /**
      * Side to hit, buy (hit ask) or sell (hit bid).
      */
     private Side side;
 
+    /**
+     * Totally hedged or not hedged totally.
+     */
+    private boolean hedged;
 
     /**
      * Creation time.
      */
-    private final long creationTime = System.currentTimeMillis();
+    private long creationTime = System.currentTimeMillis();
     
 
     @Override
     public String toString() {
-        return "HedgeOrder id=" + id + ", limit price total=" + limitTotalPrice 
-                + ", side=" + side + " for " + product + " " + instrument + "." + type
-                + " against suggested tick " + tickId + ", created " + creationTime;
+        return "HedgeResult id=" + id + ", used itckId=" + tickId
+                + ", side=" + side + " for " + product + " " + instrument + "." + source
+                + ", hedgedTotalPrice=" + totalPrice + ", hedgedAmount=" + amount
+                + (hedged ? " HEDGED" : " NOT hedged");
     }
 }

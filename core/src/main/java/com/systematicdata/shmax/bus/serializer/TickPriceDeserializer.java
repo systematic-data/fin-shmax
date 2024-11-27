@@ -41,11 +41,11 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
         try {
             final TickPrice.TickPriceBuilder tickPrice = TickPrice.builder();
 
-            tickPrice.id(deserializeString(buffer));
-            tickPrice.reqId(deserializeString(buffer));
-            tickPrice.product(deserializeString(buffer)); 
-            tickPrice.instrument(deserializeString(buffer));
-            tickPrice.type(deserializeString(buffer));
+            tickPrice.id(StringSerializationUtils.deserializeString(buffer));
+            tickPrice.reqId(StringSerializationUtils.deserializeString(buffer));
+            tickPrice.product(StringSerializationUtils.deserializeString(buffer)); 
+            tickPrice.instrument(StringSerializationUtils.deserializeString(buffer));
+            tickPrice.type(StringSerializationUtils.deserializeString(buffer));
  
             tickPrice.venueTime(buffer.getLong());
             tickPrice.receptionTime(buffer.getLong());
@@ -87,18 +87,5 @@ public class TickPriceDeserializer implements Deserializer<TickPrice> {
     @Override
     public void close() {
     }
-
-
-    //
-    // -------------------- PRIVATE STUFF 
-    //
-
-    private String deserializeString(final ByteBuffer buffer) {
-        final int length = buffer.getShort();
-        final byte[] bytes = new byte[length];
-        buffer.get(bytes);
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
-
 
 }

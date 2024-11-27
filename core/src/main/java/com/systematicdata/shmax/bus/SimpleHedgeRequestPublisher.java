@@ -10,15 +10,15 @@ import com.systematicdata.shmax.bus.serializer.*;
 import com.systematicdata.shmax.data.*;
 
 /**
- * Publisher of HedgeOrders for a result of a logic.
+ * Publisher of HedgeRequests for a result of a logic.
  */
-public class SimpleHedgeOrderPublisher extends BasicPublisher {
+public class SimpleHedgeRequestPublisher extends BasicPublisher {
     private static final Logger log = LoggerFactory.getLogger(
-                SimpleHedgeOrderPublisher.class);
-    private final HedgeOrderSerializer serializer;
+                SimpleHedgeRequestPublisher.class);
+    private final HedgeRequestSerializer serializer;
 
-    public SimpleHedgeOrderPublisher() {
-        this.serializer = new HedgeOrderSerializer();
+    public SimpleHedgeRequestPublisher() {
+        this.serializer = new HedgeRequestSerializer();
     }
 
 
@@ -32,7 +32,7 @@ public class SimpleHedgeOrderPublisher extends BasicPublisher {
             log.error("Trying to publish before complete initialization. Not 'Agent' set");
             return;
         }
-        final HedgeOrder order = (HedgeOrder) data;
+        final HedgeRequest order = (HedgeRequest) data;
         // Serializes TickPrice
         this.byteBuffer.rewind();
         int length = this.serializer.serialize(order, this.byteBuffer);

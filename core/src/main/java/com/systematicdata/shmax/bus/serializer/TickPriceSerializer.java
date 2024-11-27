@@ -39,12 +39,12 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
         try {
             tickPrice.setT0(System.currentTimeMillis());
             
-            serializeString(tickPrice.getId(), buffer);
-            serializeString(tickPrice.getReqId(), buffer);
+            StringSerializationUtils.serializeString(tickPrice.getId(), buffer);
+            StringSerializationUtils.serializeString(tickPrice.getReqId(), buffer);
             
-            serializeString(tickPrice.getProduct(), buffer);
-            serializeString(tickPrice.getInstrument(), buffer);
-            serializeString(tickPrice.getType(), buffer);
+            StringSerializationUtils.serializeString(tickPrice.getProduct(), buffer);
+            StringSerializationUtils.serializeString(tickPrice.getInstrument(), buffer);
+            StringSerializationUtils.serializeString(tickPrice.getType(), buffer);
             
             buffer.putLong(tickPrice.getVenueTime());    // 8 bytes
             buffer.putLong(tickPrice.getReceptionTime());// 8 bytes
@@ -79,15 +79,4 @@ public class TickPriceSerializer implements Serializer<TickPrice> {
     @Override
     public void close() {
     }
-
-
-    //
-    // PRIVATE STUFF ------------------------
-    //
-    private void serializeString(final String str, final ByteBuffer buffer) {
-        byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
-        buffer.putShort((short) bytes.length);  // 2 bytes for lebgth
-        buffer.put(bytes); // UTF-8 String
-    }
-
 }
