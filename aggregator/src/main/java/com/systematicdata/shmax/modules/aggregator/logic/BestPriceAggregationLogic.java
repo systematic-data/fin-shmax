@@ -13,6 +13,8 @@ import com.systematicdata.fixmath.*;
 /**
  * Process instrument and products of same type with different sources to
  * create the aggregated price.
+ *
+ * TODO: Subscribe to hedge messages and remove tick contained in the HedgeOrder.
  */
  @Slf4j
 public class BestPriceAggregationLogic implements TickLogic {
