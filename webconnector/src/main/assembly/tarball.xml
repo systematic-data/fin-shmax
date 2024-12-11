@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/1.1.0" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+
+    <id>tarball</id>
+    <formats>
+        <format>tar.gz</format> <!-- Create .tgz file -->
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <!-- Include JAR file -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <includes>
+                <include>${project.build.finalName}.jar</include>
+            </includes>
+            <outputDirectory>/lib</outputDirectory> <!-- Store JAR inside /lib -->
+        </fileSet>
+
+        <!-- Include Dependencies -->
+        <fileSet>
+            <directory>${project.build.directory}/lib</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <outputDirectory>/lib</outputDirectory> <!-- Store all dependency JARs in /lib -->
+        </fileSet>
+
+        <!-- Include Scripts from src/main/sh -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/sh</directory>
+            <includes>
+                <include>**/*.sh</include> <!-- Include all .sh files -->
+            </includes>
+            <outputDirectory>/bin</outputDirectory> <!-- Store scripts in /bin -->
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/config</directory>
+            <includes>
+                <include>**/*.*</include> <!-- Include all .sh files -->
+            </includes>
+            <outputDirectory>/config</outputDirectory> <!-- Store scripts in /bin -->
+        </fileSet>
+
+    </fileSets>
+</assembly>
+

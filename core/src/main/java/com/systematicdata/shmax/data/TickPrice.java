@@ -14,7 +14,7 @@ import com.systematicdata.fixmath.*;
 @Setter
 public class TickPrice {
     /**
-     * Unique id for this produc and source.
+     * Unique tick id for this product and source.
      */
     private String id="";
 
