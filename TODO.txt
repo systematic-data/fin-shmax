@@ -1,0 +1,54 @@
+Trade Router: receives a REST messsage for the trade, and injects into the bus of commands
+Aggregator: add margin (configurable) for Trade generation price. Do not generate AGG, TRD
+Fix Venue Adapter: listen to a seocndary Aeron bus with no loss
+FX Spot Trade and Hedge management: send hedges to secondary bus
+
+Estaria bien un Aggr.Prices adaptor y un interfaz web
+
+Y hacer una superprueba de carga poniendo dos venues a emitir precios y el agregador agregando
+    y el visualizador que los vea.
+
+
+Habria que pensar en la alta disponibilidad y en la escalabilidad infinita:
+    Alta disponibilidad:
+        Meter varias instancias del mismo modulo:
+                Venues: como solo hay uno conectado, los otros ignoran
+                        con una logica de Pharos o similar se hacen lideres
+
+                Aggregator and Trade Price:
+                        pueden usar un Redis para acordar quién esta suscrito a qué
+
+                FXSpot Trade and Hedge Mngmt
+                        un Redis para acordar a qué esta suscrito cada uno
+
+                TradeRouter:
+                        tods escuchan, pero el que recibe la peticion de trade por REST
+                        es el que injecta en el bus
+
+
+
+
+
+Pasos siguientes:
+
+    1.- Que el Hedger compile, aunque no funcione bien: no lo voy a enchufar
+        (Miercoles 27.11)
+
+    2.- Annadir al agregador un margen de trade. Hacer que genere TRD
+        (Jueves 28.11)
+
+    3.- Simulador FIX (Acceptor) que genere precios en las G10 velocidad regulable
+        (Jueves 28.11)
+
+    4.- Poner el bus Solace
+        En ese momento contar a David
+
+    5.- Crear un adaptador de precios TRD entubado por un WebSocket
+        + Una pantalla de visualizacion de precios en tiempo real
+        (Dos dias o tres)
+
+    6.- Montar en algun lado en nube de prueba (Azure? Google?)
+        En ese momento contar a Sammy
+
+    X.- Latencias comparativas con Solace ?? Bajo demanda
+
